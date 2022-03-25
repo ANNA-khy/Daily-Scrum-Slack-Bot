@@ -10,7 +10,7 @@ name: Java CI with Gradle
 on:
   push:
     branches: [ main ]
-#     paths: [ 'Server/**', '.github/workflows/**']
+    paths: [ 'Server/**', '.github/workflows/**']
   pull_request:
     branches: [ main ]
 
@@ -34,3 +34,4 @@ jobs:
       with:
         arguments: build
         build-root-directory: Server
+        gradle-executable: /Server/gradle
