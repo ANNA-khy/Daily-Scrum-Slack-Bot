@@ -32,4 +32,4 @@ jobs:
       uses: gradle/gradle-build-action@0d13054264b0bb894ded474f08ebb30921341cee
       with:
         arguments: build
-        gradle-executable: /home/runner/work/Daily-Scrum-Slack-Bot/Server/gradle/wrapper/gradle-wrapper.properties
+        gradle-executable: /home/runner/work/Daily-Scrum-Slack-Bot/Server/Daily-Scrum-Bot/gradle/wrapper/gradle-wrapper.properties
