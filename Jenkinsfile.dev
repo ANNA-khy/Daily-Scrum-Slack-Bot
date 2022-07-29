@@ -1,0 +1,66 @@
+pipeline {
+    agent any
+    stages {
+        stage('delete origin zip file'){
+            steps{
+                script{
+                    try{
+                        sh 'rm -rf *.jar'
+                    } catch(error){
+                        print(error)
+                        env.cloneResult = false
+                        currentBuild.result = 'FAILURE'
+                    }
+                }
+            }
+        }
+        stage('make zip file'){
+            steps{
+                script{
+                    try{
+                        sh 'chmod +x gradlew'
+                        sh 'Server/gradlew bootJar'
+                    } catch(error){
+                        print(error)
+                        env.cloneResult = false
+                        currentBuild.result = 'FAILURE'
+                    }
+                }
+            }
+        }
+        stage('upload to S3'){
+            steps{
+                script{
+                    try{
+                        sh 'aws s3 cp Daily-Scrum-Bot.jar \
+                        s3://khy-jenkins-test-bucket/Daily-Scrum-Bot.jar \
+                        --region ap-northeast-2'
+                    } catch(error){
+                        print(error)
+                        env.cloneResult = false
+                        currentBuild.result = 'FAILURE'
+                    }
+                }
+            }
+        }
+        stage('deploy'){
+            steps{
+                script{
+                    try{
+                        sh 'aws elasticbeanstalk create-application-version --region ap-northeast-2 \
+                        --application-name Daily-Scrum-Bot \
+                        --version-label beanstalk_v${BUILD_NUMBER} \
+                        --source-bundle S3Bucket="khy-jenkins-test-bucket",S3Key="Daily-Scrum-Bot.jar"'
+                        sh 'aws elasticbeanstalk update-environment --region ap-northeast-2 \
+                        --environment-name java-env \
+                        --version-label beanstalk_v${BUILD_NUMBER}'
+                    } catch(error){
+                        print(error)
+                        env.cloneResult = false
+                        currentBuild.result = 'FAILURE'
+                    }
+                }
+            }
+        }
+    }
+}
